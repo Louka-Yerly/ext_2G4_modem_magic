@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+#include "math.h"
 #include "bs_types.h"
 #include "bs_tracing.h"
 #include "bs_oswrap.h"
@@ -56,8 +57,25 @@ void* modem_init(int argc, char *argv[], uint dev_nbr, uint nbr_devices) {
  */
 void modem_analog_rx(void *this, p2G4_radioparams_t *rx_radio_params, double *OutputSNR,double *Output_RSSI_power_level,
                      double *rx_powers, tx_l_c_t *txl_c, uint tx_nbr) {
+
+  mo_magic_args_t *mo_st = (mo_magic_args_t *)this;
+
+  //Trivial RSSI model: If a transmitted has the same center frequency as where the receiver is open,
+  //we assume all its power is measured. Otherwise none.
+  //Meaning, we ignore receiver filter and modulation shapes
+  p2G4_freq_t  rx_freq = rx_radio_params->center_freq;
+  double acc_power = 4e-12; //-114dBm : Thermal noise floor for 1MHz @300K
+  for (int i = 0; i < mo_st->nbr_devices ; i++ ) {
+    if ( txl_c->used[i] ){ //For each active transmitter (including the desired one
+      if (rx_freq == txl_c->tx_list[i].tx_s.radio_params.center_freq) {
+        acc_power += pow(10.0, rx_powers[i]/10.0);
+      }
+    }
+  }
+
+  *Output_RSSI_power_level = 10*log10(acc_power);
   *OutputSNR = 100;
-  *Output_RSSI_power_level = -35; //TOLOW: it would be nice to have some ideal RSSI model here
+
 }
 
 /**
