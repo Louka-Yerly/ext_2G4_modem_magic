@@ -83,10 +83,10 @@ void modem_analog_rx(void *this, p2G4_radioparams_t *rx_radio_params, double *Ou
  *
  * inputs:
  *  this          : Pointer to this modem object
- *  rx_radioparams: Radio parameters/configuration of this receiver for this Rx/RSSI measurement
+ *  rx_modem_params: Radio parameters/configuration of this receiver for this Rx/RSSI measurement
  *  SNR           : SNR level at the analog output as calculated by modem_analog_rx()
  */
-uint32_t modem_digital_perf_ber(void *this, p2G4_radioparams_t *rx_radioparams, double SNR) {
+uint32_t modem_digital_perf_ber(void *this, p2G4_modemdigparams_t *rx_modem_params, double SNR) {
   return ((mo_magic_args_t*)this)->BER;
 }
 
@@ -99,11 +99,11 @@ uint32_t modem_digital_perf_ber(void *this, p2G4_radioparams_t *rx_radioparams, 
  *
  * inputs:
  *  this            : Pointer to this modem object
- *  rx_radio_params : Radio parameters/configuration of this receiver for this Rx/RSSI measurement
+ *  rx_modem_params : Radio parameters/configuration of this receiver for this Rx/RSSI measurement
  *  SNR             : SNR level at the analog output as calculated by modem_analog_rx()
  *  tx_s            : Parameters of the transmission we are receiving (in case the sync. probability depends on any of them)
  */
-uint32_t modem_digital_perf_sync(void *this, p2G4_radioparams_t *rx_radio_params, double SNR, p2G4_txv2_t* tx_s) {
+uint32_t modem_digital_perf_sync(void *this, p2G4_modemdigparams_t *rx_modem_params, double SNR, p2G4_txv2_t* tx_s) {
   return  ((mo_magic_args_t*)this)->sync_prob;
 }
 
