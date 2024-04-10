@@ -140,4 +140,3 @@ void modem_delete(void *this){
     free(this);
   }
 }
-
