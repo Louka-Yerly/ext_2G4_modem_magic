@@ -14,6 +14,8 @@
 #include "modem_magic_args.h"
 #include "p2G4_pending_tx_rx_list.h"
 
+#include "bs_rand_main.h"
+
 /**
  * Initialize the modem internal status
  *
@@ -74,7 +76,7 @@ void modem_analog_rx(void *this, p2G4_radioparams_t *rx_radio_params, double *Ou
   }
 
   *Output_RSSI_power_level = 10*log10(acc_power);
-  *OutputSNR = 100;
+  *OutputSNR = *Output_RSSI_power_level > -50? 100 : -100;
 
 }
 
@@ -87,7 +89,10 @@ void modem_analog_rx(void *this, p2G4_radioparams_t *rx_radio_params, double *Ou
  *  SNR           : SNR level at the analog output as calculated by modem_analog_rx()
  */
 uint32_t modem_digital_perf_ber(void *this, p2G4_modemdigparams_t *rx_modem_params, double SNR) {
-  return ((mo_magic_args_t*)this)->BER;
+  if(SNR < 90) {
+	return RAND_PROB_1;
+  }
+  return 0;
 }
 
 /**
